@@ -32,16 +32,20 @@
     <None Include="grid_fragment.glsl">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="grid_line_fragment.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="grid_line_vertex.glsl">
+      <Filter>Source Files</Filter>
+    </None>
     <None Include="line_vertex.glsl">
       <Filter>Source Files</Filter>
     </None>
     <None Include="line_fragment.glsl">
       <Filter>Source Files</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="TODO.txt">
+    <None Include="line_geometry.glsl">
       <Filter>Source Files</Filter>
-    </Text>
+    </None>
   </ItemGroup>
 </Project>

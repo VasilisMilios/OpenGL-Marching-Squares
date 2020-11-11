@@ -16,17 +16,9 @@ std::vector<float> getOffset(int state);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 800;
 
-const int rows = 100;
-const int cols = 100;
+const int rows = 200;
+const int cols = 200;
 const float size = 2.0 / (rows - 1);
-
-
-struct Point {
-    float x;
-    float y;
-    float z; 
-};
-
 
 int main()
 {
@@ -57,14 +49,16 @@ int main()
         return -1;
     }
 
+    
 
     Shader gridShader("grid_vertex.glsl", "grid_fragment.glsl");
-    Shader lineShader("line_vertex.glsl", "line_fragment.glsl");
+    Shader gridLineShader("grid_line_vertex.glsl", "grid_line_fragment.glsl");
+    Shader lineShader("line_vertex.glsl", "line_fragment.glsl", "line_geometry.glsl");
 
     OpenSimplexNoise::Noise noise;
-    
+
     // set up vertex data (and buffer(s)) and configure vertex attributes
-    float gridLines[(rows+cols)*4];
+    float gridLines[(rows + cols) * 4];
     for (int i = 0; i < rows; i++) {
         gridLines[i * 4] = i * size - 1.0f;
         gridLines[i * 4 + 1] = -1.0f;
@@ -73,166 +67,166 @@ int main()
     }
 
     for (int i = 0; i < cols; i++) {
-        gridLines[rows*4 + i * 4] = -1.0f;
-        gridLines[rows*4 + i * 4 + 1] = i * size - 1.0f;
-        gridLines[rows*4 + i * 4 + 2] = 1.0f;
-        gridLines[rows*4 + i * 4 + 3] = i * size - 1.0f;
+        gridLines[rows * 4 + i * 4] = -1.0f;
+        gridLines[rows * 4 + i * 4 + 1] = i * size - 1.0f;
+        gridLines[rows * 4 + i * 4 + 2] = 1.0f;
+        gridLines[rows * 4 + i * 4 + 3] = i * size - 1.0f;
     }
 
     float gridVertices[rows][cols][3];
-    float gridValues[cols][rows];
+    //float gridValues[cols][rows];
 
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
             gridVertices[i][j][0] = i * size - 1.0f;
             gridVertices[i][j][1] = j * size - 1.0f;
             gridVertices[i][j][2] = 0.0f;
-            gridValues[i][j] = round(((float)noise.eval(i * size, j * size)+1.0f) / 2.0f);
+            //gridValues[i][j] = round(((float)noise.eval(i * size, j * size) + 1.0f) / 2.0f);
         }
     }
 
-    std::vector<float> lineVector;
+    //std::vector<float> lineVector;
 
-    for (int i = 0; i < rows - 1; i++) {
-        for (int j = 0; j < cols - 1; j++) {
-            int state = gridValues[i][j] * 1 + gridValues[i + 1][j] * 2 + gridValues[i + 1][j + 1] * 4 + gridValues[i][j + 1] * 8;
-            //std::vector<float> offset = getOffset(state);
-            float x = i * size - 1.0f;
-            float y = j * size - 1.0f;
-            //std::cout << offset.size();
-            switch (state) {
-            case 1:
-                lineVector.push_back(x + size * 0.5f);
-                lineVector.push_back(y);
-                lineVector.push_back(0.0f);
-                lineVector.push_back(x);
-                lineVector.push_back(y + size * 0.5f);
-                lineVector.push_back(0.0f);
-                break;
-            case 2:
-               lineVector.push_back(x + size);
-               lineVector.push_back(y + size * 0.5);
-               lineVector.push_back(0.0f);
-               lineVector.push_back(x + size * 0.5);
-               lineVector.push_back(y);
-               lineVector.push_back(0.0f);
-               break;
-            case 3:
-                lineVector.push_back(x + size);
-                lineVector.push_back(y + size*0.5);
-                lineVector.push_back(0.0f);
-                lineVector.push_back(x);
-                lineVector.push_back(y + size*0.5);
-                lineVector.push_back(0.0f);
-                break;
-            case 4:
-                lineVector.push_back(x + size);
-                lineVector.push_back(y + size * 0.5);
-                lineVector.push_back(0.0f);
-                lineVector.push_back(x + size * 0.5);
-                lineVector.push_back(y + size);
-                lineVector.push_back(0.0f);
-                break;
-            case 5:
-                lineVector.push_back(x + size * 0.5);
-                lineVector.push_back(y + size);
-                lineVector.push_back(0.0f);
-                lineVector.push_back(x);
-                lineVector.push_back(y + size * 0.5);
-                lineVector.push_back(0.0f);
-                lineVector.push_back(x + size);
-                lineVector.push_back(y + size * 0.5);
-                lineVector.push_back(0.0f);
-                lineVector.push_back(x + size * 0.5);
-                lineVector.push_back(y);
-                lineVector.push_back(0.0f);
-                break;
-            case 6:
-                lineVector.push_back(x + size * 0.5);
-                lineVector.push_back(y + size);
-                lineVector.push_back(0.0f);
-                lineVector.push_back(x + size * 0.5);
-                lineVector.push_back(y);
-                lineVector.push_back(0.0f);
-                break;
-            case 7:
-                lineVector.push_back(x + size * 0.5);
-                lineVector.push_back(y + size);
-                lineVector.push_back(0.0f);
-                lineVector.push_back(x);
-                lineVector.push_back(y + size * 0.5);
-                lineVector.push_back(0.0f);
-                break;
-            case 8:
-                lineVector.push_back(x + size * 0.5);
-                lineVector.push_back(y + size);
-                lineVector.push_back(0.0f);
-                lineVector.push_back(x);
-                lineVector.push_back(y + size * 0.5);
-                lineVector.push_back(0.0f);
-                break;
-            case 9:
-                lineVector.push_back(x + size * 0.5);
-                lineVector.push_back(y + size);
-                lineVector.push_back(0.0f);
-                lineVector.push_back(x + size * 0.5);
-                lineVector.push_back(y);
-                lineVector.push_back(0.0f);
-                break;
-            case 10:
-                lineVector.push_back(x + size * 0.5);
-                lineVector.push_back(y + size);
-                lineVector.push_back(0.0f);
-                lineVector.push_back(x + size);
-                lineVector.push_back(y + size * 0.5);
-                lineVector.push_back(0.0f);
-                lineVector.push_back(x + size * 0.5);
-                lineVector.push_back(y);
-                lineVector.push_back(0.0f);
-                lineVector.push_back(x);
-                lineVector.push_back(y + size * 0.5);
-                lineVector.push_back(0.0f);
-                break;
-            case 11:
-                lineVector.push_back(x + size * 0.5);
-                lineVector.push_back(y + size);
-                lineVector.push_back(0.0f);
-                lineVector.push_back(x + size);
-                lineVector.push_back(y + size * 0.5);
-                lineVector.push_back(0.0f);
-                break;
-            case 12:
-                lineVector.push_back(x);
-                lineVector.push_back(y + size * 0.5);
-                lineVector.push_back(0.0f);
-                lineVector.push_back(x + size);
-                lineVector.push_back(y + size * 0.5);
-                lineVector.push_back(0.0f);
-                break;
-            case 13:
-                lineVector.push_back(x + size);
-                lineVector.push_back(y + size * 0.5);
-                lineVector.push_back(0.0f);
-                lineVector.push_back(x + size * 0.5);
-                lineVector.push_back(y);
-                lineVector.push_back(0.0f);
-                break;
-            case 14:
-                lineVector.push_back(x);
-                lineVector.push_back(y + size * 0.5);
-                lineVector.push_back(0.0f);
-                lineVector.push_back(x + size * 0.5);
-                lineVector.push_back(y);
-                lineVector.push_back(0.0f);
-                break;
-            default:
-                break;
-            }
-        }
-    }
+    //for (int i = 0; i < rows - 1; i++) {
+    //    for (int j = 0; j < cols - 1; j++) {
+    //        int state = gridValues[i][j] * 1 + gridValues[i + 1][j] * 2 + gridValues[i + 1][j + 1] * 4 + gridValues[i][j + 1] * 8;
+    //        //std::vector<float> offset = getOffset(state);
+    //        float x = i * size - 1.0f;
+    //        float y = j * size - 1.0f;
+    //        //std::cout << offset.size();
+    //        switch (state) {
+    //        case 1:
+    //            lineVector.push_back(x + size * 0.5f);
+    //            lineVector.push_back(y);
+    //            lineVector.push_back(0.0f);
+    //            lineVector.push_back(x);
+    //            lineVector.push_back(y + size * 0.5f);
+    //            lineVector.push_back(0.0f);
+    //            break;
+    //        case 2:
+    //            lineVector.push_back(x + size);
+    //            lineVector.push_back(y + size * 0.5);
+    //            lineVector.push_back(0.0f);
+    //            lineVector.push_back(x + size * 0.5);
+    //            lineVector.push_back(y);
+    //            lineVector.push_back(0.0f);
+    //            break;
+    //        case 3:
+    //            lineVector.push_back(x + size);
+    //            lineVector.push_back(y + size * 0.5);
+    //            lineVector.push_back(0.0f);
+    //            lineVector.push_back(x);
+    //            lineVector.push_back(y + size * 0.5);
+    //            lineVector.push_back(0.0f);
+    //            break;
+    //        case 4:
+    //            lineVector.push_back(x + size);
+    //            lineVector.push_back(y + size * 0.5);
+    //            lineVector.push_back(0.0f);
+    //            lineVector.push_back(x + size * 0.5);
+    //            lineVector.push_back(y + size);
+    //            lineVector.push_back(0.0f);
+    //            break;
+    //        case 5:
+    //            lineVector.push_back(x + size * 0.5);
+    //            lineVector.push_back(y + size);
+    //            lineVector.push_back(0.0f);
+    //            lineVector.push_back(x);
+    //            lineVector.push_back(y + size * 0.5);
+    //            lineVector.push_back(0.0f);
+    //            lineVector.push_back(x + size);
+    //            lineVector.push_back(y + size * 0.5);
+    //            lineVector.push_back(0.0f);
+    //            lineVector.push_back(x + size * 0.5);
+    //            lineVector.push_back(y);
+    //            lineVector.push_back(0.0f);
+    //            break;
+    //        case 6:
+    //            lineVector.push_back(x + size * 0.5);
+    //            lineVector.push_back(y + size);
+    //            lineVector.push_back(0.0f);
+    //            lineVector.push_back(x + size * 0.5);
+    //            lineVector.push_back(y);
+    //            lineVector.push_back(0.0f);
+    //            break;
+    //        case 7:
+    //            lineVector.push_back(x + size * 0.5);
+    //            lineVector.push_back(y + size);
+    //            lineVector.push_back(0.0f);
+    //            lineVector.push_back(x);
+    //            lineVector.push_back(y + size * 0.5);
+    //            lineVector.push_back(0.0f);
+    //            break;
+    //        case 8:
+    //            lineVector.push_back(x + size * 0.5);
+    //            lineVector.push_back(y + size);
+    //            lineVector.push_back(0.0f);
+    //            lineVector.push_back(x);
+    //            lineVector.push_back(y + size * 0.5);
+    //            lineVector.push_back(0.0f);
+    //            break;
+    //        case 9:
+    //            lineVector.push_back(x + size * 0.5);
+    //            lineVector.push_back(y + size);
+    //            lineVector.push_back(0.0f);
+    //            lineVector.push_back(x + size * 0.5);
+    //            lineVector.push_back(y);
+    //            lineVector.push_back(0.0f);
+    //            break;
+    //        case 10:
+    //            lineVector.push_back(x + size * 0.5);
+    //            lineVector.push_back(y + size);
+    //            lineVector.push_back(0.0f);
+    //            lineVector.push_back(x + size);
+    //            lineVector.push_back(y + size * 0.5);
+    //            lineVector.push_back(0.0f);
+    //            lineVector.push_back(x + size * 0.5);
+    //            lineVector.push_back(y);
+    //            lineVector.push_back(0.0f);
+    //            lineVector.push_back(x);
+    //            lineVector.push_back(y + size * 0.5);
+    //            lineVector.push_back(0.0f);
+    //            break;
+    //        case 11:
+    //            lineVector.push_back(x + size * 0.5);
+    //            lineVector.push_back(y + size);
+    //            lineVector.push_back(0.0f);
+    //            lineVector.push_back(x + size);
+    //            lineVector.push_back(y + size * 0.5);
+    //            lineVector.push_back(0.0f);
+    //            break;
+    //        case 12:
+    //            lineVector.push_back(x);
+    //            lineVector.push_back(y + size * 0.5);
+    //            lineVector.push_back(0.0f);
+    //            lineVector.push_back(x + size);
+    //            lineVector.push_back(y + size * 0.5);
+    //            lineVector.push_back(0.0f);
+    //            break;
+    //        case 13:
+    //            lineVector.push_back(x + size);
+    //            lineVector.push_back(y + size * 0.5);
+    //            lineVector.push_back(0.0f);
+    //            lineVector.push_back(x + size * 0.5);
+    //            lineVector.push_back(y);
+    //            lineVector.push_back(0.0f);
+    //            break;
+    //        case 14:
+    //            lineVector.push_back(x);
+    //            lineVector.push_back(y + size * 0.5);
+    //            lineVector.push_back(0.0f);
+    //            lineVector.push_back(x + size * 0.5);
+    //            lineVector.push_back(y);
+    //            lineVector.push_back(0.0f);
+    //            break;
+    //        default:
+    //            break;
+    //        }
+    //    }
+    //}
 
 
-    float* lines = &lineVector[0];
+    //float* lines = &lineVector[0];
 
     unsigned int gridVBO, gridVAO, gridLineVAO, gridLineVBO, lineVBO, lineVAO;
     glGenVertexArrays(1, &gridVAO);
@@ -240,14 +234,14 @@ int main()
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     glBindVertexArray(gridVAO);
     glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(gridValues)+sizeof(gridVertices), NULL, GL_DYNAMIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(gridVertices), gridVertices);
-    glBufferSubData(GL_ARRAY_BUFFER, sizeof(gridVertices), sizeof(gridValues), gridValues);
-    
+    glBufferData(GL_ARRAY_BUFFER,sizeof(gridVertices), gridVertices, GL_STATIC_DRAW);
+    //glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(gridVertices), gridVertices);
+    //glBufferSubData(GL_ARRAY_BUFFER, sizeof(gridVertices), sizeof(gridValues), gridValues);
+
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 1 * sizeof(float), (void*)(sizeof(gridVertices)));
-    glEnableVertexAttribArray(1);
+    //glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 1 * sizeof(float), (void*)(sizeof(gridVertices)));
+    //glEnableVertexAttribArray(1);
 
     glGenVertexArrays(1, &gridLineVAO);
     glGenBuffers(1, &gridLineVBO);
@@ -260,10 +254,10 @@ int main()
 
     glGenVertexArrays(1, &lineVAO);
     glGenBuffers(1, &lineVBO);
-     //bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+    //bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     glBindVertexArray(lineVAO);
     glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*lineVector.size(), lines, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(gridVertices), gridVertices, GL_DYNAMIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -286,181 +280,31 @@ int main()
 
         // render
         // ------
-        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         //glLineWidth(8);
         glClear(GL_COLOR_BUFFER_BIT);
-
-        lineShader.use();
-        lineShader.setBool("gridLine", true);
+        float time = glfwGetTime();
+        gridLineShader.use();
         glBindVertexArray(gridLineVAO);
         //glDrawArrays(GL_LINES, 0, (rows + cols) * 2);
         gridShader.use();
+        lineShader.setFloat("time", 0);
+        lineShader.setFloat("size", size);
         glBindVertexArray(gridVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
-        float time = glfwGetTime();
-
-        glBufferSubData(GL_ARRAY_BUFFER, sizeof(gridVertices), sizeof(gridValues), gridValues);
-
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                gridValues[i][j] = round(((float)noise.eval(i * size, j * size, time/5.0f) + 1.0f) / 2.0f);
-            }
-        }
-
-        glPointSize(10);
+        
         //glDrawArrays(GL_POINTS, 0, rows * cols);
         lineShader.use();
-        lineShader.setBool("gridLine", false);
+        lineShader.setFloat("time", time / 10);
+        lineShader.setFloat("size", size);
         glBindVertexArray(lineVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
+        glPointSize(10);
+        glDrawArrays(GL_POINTS, 0, rows*cols);
 
-        lineVector = {};
-        for (int i = 0; i < rows - 1; i++) {
-            for (int j = 0; j < cols - 1; j++) {
-                int state = gridValues[i][j] * 1 + gridValues[i + 1][j] * 2 + gridValues[i + 1][j + 1] * 4 + gridValues[i][j + 1] * 8;
-                //std::vector<float> offset = getOffset(state);
-                float x = i * size - 1.0f;
-                float y = j * size - 1.0f;
-                //std::cout << offset.size();
-                switch (state) {
-                case 1:
-                    lineVector.push_back(x + size * 0.5f);
-                    lineVector.push_back(y);
-                    lineVector.push_back(0.0f);
-                    lineVector.push_back(x);
-                    lineVector.push_back(y + size * 0.5f);
-                    lineVector.push_back(0.0f);
-                    break;
-                case 2:
-                    lineVector.push_back(x + size);
-                    lineVector.push_back(y + size * 0.5);
-                    lineVector.push_back(0.0f);
-                    lineVector.push_back(x + size * 0.5);
-                    lineVector.push_back(y);
-                    lineVector.push_back(0.0f);
-                    break;
-                case 3:
-                    lineVector.push_back(x + size);
-                    lineVector.push_back(y + size * 0.5);
-                    lineVector.push_back(0.0f);
-                    lineVector.push_back(x);
-                    lineVector.push_back(y + size * 0.5);
-                    lineVector.push_back(0.0f);
-                    break;
-                case 4:
-                    lineVector.push_back(x + size);
-                    lineVector.push_back(y + size * 0.5);
-                    lineVector.push_back(0.0f);
-                    lineVector.push_back(x + size * 0.5);
-                    lineVector.push_back(y + size);
-                    lineVector.push_back(0.0f);
-                    break;
-                case 5:
-                    lineVector.push_back(x + size * 0.5);
-                    lineVector.push_back(y + size);
-                    lineVector.push_back(0.0f);
-                    lineVector.push_back(x);
-                    lineVector.push_back(y + size * 0.5);
-                    lineVector.push_back(0.0f);
-                    lineVector.push_back(x + size);
-                    lineVector.push_back(y + size * 0.5);
-                    lineVector.push_back(0.0f);
-                    lineVector.push_back(x + size * 0.5);
-                    lineVector.push_back(y);
-                    lineVector.push_back(0.0f);
-                    break;
-                case 6:
-                    lineVector.push_back(x + size * 0.5);
-                    lineVector.push_back(y + size);
-                    lineVector.push_back(0.0f);
-                    lineVector.push_back(x + size * 0.5);
-                    lineVector.push_back(y);
-                    lineVector.push_back(0.0f);
-                    break;
-                case 7:
-                    lineVector.push_back(x + size * 0.5);
-                    lineVector.push_back(y + size);
-                    lineVector.push_back(0.0f);
-                    lineVector.push_back(x);
-                    lineVector.push_back(y + size * 0.5);
-                    lineVector.push_back(0.0f);
-                    break;
-                case 8:
-                    lineVector.push_back(x + size * 0.5);
-                    lineVector.push_back(y + size);
-                    lineVector.push_back(0.0f);
-                    lineVector.push_back(x);
-                    lineVector.push_back(y + size * 0.5);
-                    lineVector.push_back(0.0f);
-                    break;
-                case 9:
-                    lineVector.push_back(x + size * 0.5);
-                    lineVector.push_back(y + size);
-                    lineVector.push_back(0.0f);
-                    lineVector.push_back(x + size * 0.5);
-                    lineVector.push_back(y);
-                    lineVector.push_back(0.0f);
-                    break;
-                case 10:
-                    lineVector.push_back(x + size * 0.5);
-                    lineVector.push_back(y + size);
-                    lineVector.push_back(0.0f);
-                    lineVector.push_back(x + size);
-                    lineVector.push_back(y + size * 0.5);
-                    lineVector.push_back(0.0f);
-                    lineVector.push_back(x + size * 0.5);
-                    lineVector.push_back(y);
-                    lineVector.push_back(0.0f);
-                    lineVector.push_back(x);
-                    lineVector.push_back(y + size * 0.5);
-                    lineVector.push_back(0.0f);
-                    break;
-                case 11:
-                    lineVector.push_back(x + size * 0.5);
-                    lineVector.push_back(y + size);
-                    lineVector.push_back(0.0f);
-                    lineVector.push_back(x + size);
-                    lineVector.push_back(y + size * 0.5);
-                    lineVector.push_back(0.0f);
-                    break;
-                case 12:
-                    lineVector.push_back(x);
-                    lineVector.push_back(y + size * 0.5);
-                    lineVector.push_back(0.0f);
-                    lineVector.push_back(x + size);
-                    lineVector.push_back(y + size * 0.5);
-                    lineVector.push_back(0.0f);
-                    break;
-                case 13:
-                    lineVector.push_back(x + size);
-                    lineVector.push_back(y + size * 0.5);
-                    lineVector.push_back(0.0f);
-                    lineVector.push_back(x + size * 0.5);
-                    lineVector.push_back(y);
-                    lineVector.push_back(0.0f);
-                    break;
-                case 14:
-                    lineVector.push_back(x);
-                    lineVector.push_back(y + size * 0.5);
-                    lineVector.push_back(0.0f);
-                    lineVector.push_back(x + size * 0.5);
-                    lineVector.push_back(y);
-                    lineVector.push_back(0.0f);
-                    break;
-                default:
-                    break;
-                }
-            }
-        }
+        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+         // -------------------------------------------------------------------------------
+        glfwSwapBuffers(window);
+        glfwPollEvents();
 
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float)* lineVector.size(), lines, GL_DYNAMIC_DRAW);
-        glDrawArrays(GL_LINES, 0, lineVector.size());
-
-           // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-            // -------------------------------------------------------------------------------
-            glfwSwapBuffers(window);
-           glfwPollEvents();
-        
         //glBufferData(GL_ARRAY_BUFFER, sizeof(float) * lineVector.size(), lines, GL_STATIC_DRAW);
         //glDrawArrays(GL_LINES, 0, lineVector.size());
     }
@@ -473,7 +317,7 @@ int main()
     // ------------------------------------------------------------------
     glfwTerminate();
     return 0;
-  }
+}
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
@@ -491,4 +335,3 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
 }
-
