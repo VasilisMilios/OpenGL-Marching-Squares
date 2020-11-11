@@ -155,6 +155,9 @@
     <None Include="line_fragment.glsl" />
     <None Include="line_vertex.glsl" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="TODO.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

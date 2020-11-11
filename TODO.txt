@@ -1,0 +1,5 @@
+TODO
+-------------------------------------------
+-Push the calculations to the vertex shader
+-Implement linear interpolation
+-Code cleanup
