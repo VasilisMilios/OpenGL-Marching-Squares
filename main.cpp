@@ -31,6 +31,7 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_SAMPLES, 4);
 
     // glfw window creation
     // --------------------
@@ -43,6 +44,7 @@ int main()
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -52,7 +54,7 @@ int main()
         return -1;
     }
 
-    
+    glEnable(GL_MULTISAMPLE);
 
     Shader gridShader("grid_vertex.glsl", "grid_fragment.glsl");
     Shader gridLineShader("grid_line_vertex.glsl", "grid_line_fragment.glsl");
