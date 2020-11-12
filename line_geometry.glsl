@@ -84,113 +84,129 @@ float snoise(vec3 v){
 
 void main() { 
     vec4 position = gl_in[0].gl_Position;
-    vec2 a = vec2(position.x, position.y+size);
-    vec2 b = vec2(position.x + size, position.y + size);
-    vec2 c = vec2(position.x + size, position.y);
-    vec2 d = vec2(position.x, position.y);
-    int a_value = int(round((snoise(vec3(a, time))+1.0f)/2.0f));
-    int b_value = int(round((snoise(vec3(b, time))+1.0f)/2.0f));
-    int c_value = int(round((snoise(vec3(c, time))+1.0f)/2.0f));
-    int d_value = int(round((snoise(vec3(d, time))+1.0f)/2.0f));
-    int state = a_value*8 + b_value*4 + c_value*2 + d_value*1;
+    vec2 a = vec2(position.x, position.y);
+    vec2 b = vec2(position.x + size, position.y);
+    vec2 c = vec2(position.x + size, position.y + size);
+    vec2 d = vec2(position.x, position.y + size);
+    float x = a.x;
+    float y = a.y;
+    float a_value = (snoise(vec3(a, time))+1.0f)/2.0f;
+    float b_value = (snoise(vec3(b, time))+1.0f)/2.0f;
+    float c_value = (snoise(vec3(c, time))+1.0f)/2.0f;
+    float d_value = (snoise(vec3(d, time))+1.0f)/2.0f;
+    int state = int(round(a_value))*1 + int(round(b_value))*2 + int(round(c_value))*4 + int(round(d_value))*8;
 
+
+
+    float amt = 0;
+    amt = (1 - a_value) / (a_value + b_value); 
+    float ax = mix(x , x + size, amt);
+    float ay = y;
+    amt = (1- b_value) / (c_value + b_value);
+    float bx = x + size;
+    float by = mix(y, y + size, amt);
+    amt = (1 - d_value)/(c_value + d_value);
+    float cx = mix(x, x + size, amt);
+    float cy = y + size;
+    amt = (1 - a_value) / (a_value + d_value);
+    float dx = x;
+    float dy = mix(y, y + size, amt);
 
     switch (state) {
         case 0:
             break;
         case 1:
-            color = vec3(1.0f, 0.0f, 0.0f);
-            gl_Position = vec4(d + vec2(0, size*0.5), 0.0f, 1.0f);
+            gl_Position = vec4(ax, ay, 0.0f, 1.0f);
             EmitVertex();
-            gl_Position = vec4(d + vec2(size*0.5f, 0), 0.0f, 1.0f);
+            gl_Position = vec4(dx, dy, 0.0f, 1.0f);
             EmitVertex();  
             break;
         case 2:
-            gl_Position = vec4(d + vec2(size*0.5f, 0), 0.0f, 1.0f);
+            gl_Position = vec4(bx, by, 0.0f, 1.0f);
             EmitVertex();
-            gl_Position = vec4(d + vec2(size, size*0.5f), 0.0f, 1.0f);
+            gl_Position = vec4(ax, ay, 0.0f, 1.0f);
             EmitVertex();
             break;
         case 3:
-            gl_Position = vec4(d + vec2(size, size * 0.5f), 0.0f, 1.0f);
+            gl_Position = vec4(bx, by, 0.0f, 1.0f);
             EmitVertex();
-            gl_Position = vec4(d + vec2(0, size*0.5), 0.0f, 1.0f);
+            gl_Position = vec4(dx, dy, 0.0f, 1.0f);
             EmitVertex();
             break;
         case 4:
-            gl_Position = vec4(d + vec2(size * 0.5, size), 0.0f, 1.0f);
+            gl_Position = vec4(cx, cy, 0.0f, 1.0f);
             EmitVertex();
-            gl_Position = vec4(d + vec2(size, size*0.5), 0.0f, 1.0f);
+            gl_Position = vec4(bx, by, 0.0f, 1.0f);
             EmitVertex();
             break;
         case 5:
-            gl_Position = vec4(d + vec2(size * 0.5, size), 0.0f, 1.0f);
+            gl_Position = vec4(cx, cy, 0.0f, 1.0f);
             EmitVertex();
-            gl_Position = vec4(d + vec2(0, size*0.5), 0.0f, 1.0f);
+            gl_Position = vec4(dx, dy, 0.0f, 1.0f);
             EmitVertex();
             EndPrimitive();
-            gl_Position = vec4(d + vec2(size*0.5f, 0), 0.0f, 1.0f);
+            gl_Position = vec4(bx, by, 0.0f, 1.0f);
             EmitVertex();
-            gl_Position = vec4(d + vec2(size, size*0.5f), 0.0f, 1.0f);
+            gl_Position = vec4(ax, ay, 0.0f, 1.0f);
             EmitVertex();
             break;
         case 6:
-            gl_Position = vec4(d + vec2(size * 0.5, size), 0.0f, 1.0f);
+            gl_Position = vec4(ax, ay, 0.0f, 1.0f);
             EmitVertex();
-            gl_Position = vec4(d + vec2(size*0.5, 0), 0.0f, 1.0f);
+            gl_Position = vec4(cx, cy, 0.0f, 1.0f);
             EmitVertex();
             break;
         case 7:
-           gl_Position = vec4(d + vec2(size * 0.5, size), 0.0f, 1.0f);
+            gl_Position = vec4(cx, cy, 0.0f, 1.0f);
             EmitVertex();
-            gl_Position = vec4(d + vec2(0, size * 0.5), 0.0f, 1.0f);
+            gl_Position = vec4(dx, dy, 0.0f, 1.0f);
             EmitVertex();
             break;
         case 8:
-            gl_Position = vec4(d + vec2(size * 0.5, size), 0.0f, 1.0f);
+            gl_Position = vec4(cx, cy, 0.0f, 1.0f);
             EmitVertex();
-            gl_Position = vec4(d + vec2(0, size * 0.5), 0.0f, 1.0f);
-            EmitVertex();
-            break;
-        case 9:
-            gl_Position = vec4(d + vec2(size * 0.5, size), 0.0f, 1.0f);
-            EmitVertex();
-            gl_Position = vec4(d + vec2(size*0.5, 0), 0.0f, 1.0f);
+            gl_Position = vec4(dx, dy, 0.0f, 1.0f);
             EmitVertex();
             break;
-        case 10:
-            gl_Position = vec4(d + vec2(size * 0.5, size), 0.0f, 1.0f);
+       case 9:
+            gl_Position = vec4(ax, ay, 0.0f, 1.0f);
             EmitVertex();
-            gl_Position = vec4(d + vec2(size, size*0.5), 0.0f, 1.0f);
+            gl_Position = vec4(cx, cy, 0.0f, 1.0f);
+            EmitVertex();
+            break;
+       case 10:
+            gl_Position = vec4(cx, cy, 0.0f, 1.0f);
+            EmitVertex();
+            gl_Position = vec4(bx, by, 0.0f, 1.0f);
             EmitVertex();
             EndPrimitive();
-            gl_Position = vec4(d + vec2(size*0.5f, 0), 0.0f, 1.0f);
+            gl_Position = vec4(ax, ay, 0.0f, 1.0f);
             EmitVertex();
-            gl_Position = vec4(d + vec2(0, size*0.5f), 0.0f, 1.0f);
-            EmitVertex();
-            break;
-        case 11:
-            gl_Position = vec4(d + vec2(size * 0.5, size), 0.0f, 1.0f);
-            EmitVertex();
-            gl_Position = vec4(d + vec2(size, size*0.5), 0.0f, 1.0f);
+            gl_Position = vec4(dx, dy, 0.0f, 1.0f);
             EmitVertex();
             break;
-        case 12:
-            gl_Position = vec4(d + vec2(size, size * 0.5), 0.0f, 1.0f);
+       case 11:
+            gl_Position = vec4(cx, cy, 0.0f, 1.0f);
             EmitVertex();
-            gl_Position = vec4(d + vec2(0, size*0.5), 0.0f, 1.0f);
+            gl_Position = vec4(bx, by, 0.0f, 1.0f);
+            EmitVertex();
+            break;
+       case 12:
+            gl_Position = vec4(bx, by, 0.0f, 1.0f);
+            EmitVertex();
+            gl_Position = vec4(dx, dy, 0.0f, 1.0f);
             EmitVertex();
             break;
         case 13:
-            gl_Position = vec4(d + vec2(size, size * 0.5), 0.0f, 1.0f);
+            gl_Position = vec4(bx, by, 0.0f, 1.0f);
             EmitVertex();
-            gl_Position = vec4(d + vec2(size * 0.5, 0), 0.0f, 1.0f);
+            gl_Position = vec4(ax, ay, 0.0f, 1.0f);
             EmitVertex();
             break;
         case 14:
-            gl_Position = vec4(d + vec2(0, size * 0.5), 0.0f, 1.0f);
+            gl_Position = vec4(ax, ay, 0.0f, 1.0f);
             EmitVertex();
-            gl_Position = vec4(d + vec2(size * 0.5, 0), 0.0f, 1.0f);
+            gl_Position = vec4(dx, dy, 0.0f, 1.0f);
             EmitVertex();
             break;
         case 15:

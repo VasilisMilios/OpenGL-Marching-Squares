@@ -20,6 +20,8 @@ const int rows = 200;
 const int cols = 200;
 const float size = 2.0 / (rows - 1);
 
+float time = 0;
+
 int main()
 {
     // glfw: initialize and configure
@@ -74,159 +76,15 @@ int main()
     }
 
     float gridVertices[rows][cols][3];
-    //float gridValues[cols][rows];
 
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
             gridVertices[i][j][0] = i * size - 1.0f;
             gridVertices[i][j][1] = j * size - 1.0f;
             gridVertices[i][j][2] = 0.0f;
-            //gridValues[i][j] = round(((float)noise.eval(i * size, j * size) + 1.0f) / 2.0f);
         }
     }
 
-    //std::vector<float> lineVector;
-
-    //for (int i = 0; i < rows - 1; i++) {
-    //    for (int j = 0; j < cols - 1; j++) {
-    //        int state = gridValues[i][j] * 1 + gridValues[i + 1][j] * 2 + gridValues[i + 1][j + 1] * 4 + gridValues[i][j + 1] * 8;
-    //        //std::vector<float> offset = getOffset(state);
-    //        float x = i * size - 1.0f;
-    //        float y = j * size - 1.0f;
-    //        //std::cout << offset.size();
-    //        switch (state) {
-    //        case 1:
-    //            lineVector.push_back(x + size * 0.5f);
-    //            lineVector.push_back(y);
-    //            lineVector.push_back(0.0f);
-    //            lineVector.push_back(x);
-    //            lineVector.push_back(y + size * 0.5f);
-    //            lineVector.push_back(0.0f);
-    //            break;
-    //        case 2:
-    //            lineVector.push_back(x + size);
-    //            lineVector.push_back(y + size * 0.5);
-    //            lineVector.push_back(0.0f);
-    //            lineVector.push_back(x + size * 0.5);
-    //            lineVector.push_back(y);
-    //            lineVector.push_back(0.0f);
-    //            break;
-    //        case 3:
-    //            lineVector.push_back(x + size);
-    //            lineVector.push_back(y + size * 0.5);
-    //            lineVector.push_back(0.0f);
-    //            lineVector.push_back(x);
-    //            lineVector.push_back(y + size * 0.5);
-    //            lineVector.push_back(0.0f);
-    //            break;
-    //        case 4:
-    //            lineVector.push_back(x + size);
-    //            lineVector.push_back(y + size * 0.5);
-    //            lineVector.push_back(0.0f);
-    //            lineVector.push_back(x + size * 0.5);
-    //            lineVector.push_back(y + size);
-    //            lineVector.push_back(0.0f);
-    //            break;
-    //        case 5:
-    //            lineVector.push_back(x + size * 0.5);
-    //            lineVector.push_back(y + size);
-    //            lineVector.push_back(0.0f);
-    //            lineVector.push_back(x);
-    //            lineVector.push_back(y + size * 0.5);
-    //            lineVector.push_back(0.0f);
-    //            lineVector.push_back(x + size);
-    //            lineVector.push_back(y + size * 0.5);
-    //            lineVector.push_back(0.0f);
-    //            lineVector.push_back(x + size * 0.5);
-    //            lineVector.push_back(y);
-    //            lineVector.push_back(0.0f);
-    //            break;
-    //        case 6:
-    //            lineVector.push_back(x + size * 0.5);
-    //            lineVector.push_back(y + size);
-    //            lineVector.push_back(0.0f);
-    //            lineVector.push_back(x + size * 0.5);
-    //            lineVector.push_back(y);
-    //            lineVector.push_back(0.0f);
-    //            break;
-    //        case 7:
-    //            lineVector.push_back(x + size * 0.5);
-    //            lineVector.push_back(y + size);
-    //            lineVector.push_back(0.0f);
-    //            lineVector.push_back(x);
-    //            lineVector.push_back(y + size * 0.5);
-    //            lineVector.push_back(0.0f);
-    //            break;
-    //        case 8:
-    //            lineVector.push_back(x + size * 0.5);
-    //            lineVector.push_back(y + size);
-    //            lineVector.push_back(0.0f);
-    //            lineVector.push_back(x);
-    //            lineVector.push_back(y + size * 0.5);
-    //            lineVector.push_back(0.0f);
-    //            break;
-    //        case 9:
-    //            lineVector.push_back(x + size * 0.5);
-    //            lineVector.push_back(y + size);
-    //            lineVector.push_back(0.0f);
-    //            lineVector.push_back(x + size * 0.5);
-    //            lineVector.push_back(y);
-    //            lineVector.push_back(0.0f);
-    //            break;
-    //        case 10:
-    //            lineVector.push_back(x + size * 0.5);
-    //            lineVector.push_back(y + size);
-    //            lineVector.push_back(0.0f);
-    //            lineVector.push_back(x + size);
-    //            lineVector.push_back(y + size * 0.5);
-    //            lineVector.push_back(0.0f);
-    //            lineVector.push_back(x + size * 0.5);
-    //            lineVector.push_back(y);
-    //            lineVector.push_back(0.0f);
-    //            lineVector.push_back(x);
-    //            lineVector.push_back(y + size * 0.5);
-    //            lineVector.push_back(0.0f);
-    //            break;
-    //        case 11:
-    //            lineVector.push_back(x + size * 0.5);
-    //            lineVector.push_back(y + size);
-    //            lineVector.push_back(0.0f);
-    //            lineVector.push_back(x + size);
-    //            lineVector.push_back(y + size * 0.5);
-    //            lineVector.push_back(0.0f);
-    //            break;
-    //        case 12:
-    //            lineVector.push_back(x);
-    //            lineVector.push_back(y + size * 0.5);
-    //            lineVector.push_back(0.0f);
-    //            lineVector.push_back(x + size);
-    //            lineVector.push_back(y + size * 0.5);
-    //            lineVector.push_back(0.0f);
-    //            break;
-    //        case 13:
-    //            lineVector.push_back(x + size);
-    //            lineVector.push_back(y + size * 0.5);
-    //            lineVector.push_back(0.0f);
-    //            lineVector.push_back(x + size * 0.5);
-    //            lineVector.push_back(y);
-    //            lineVector.push_back(0.0f);
-    //            break;
-    //        case 14:
-    //            lineVector.push_back(x);
-    //            lineVector.push_back(y + size * 0.5);
-    //            lineVector.push_back(0.0f);
-    //            lineVector.push_back(x + size * 0.5);
-    //            lineVector.push_back(y);
-    //            lineVector.push_back(0.0f);
-    //            break;
-    //        default:
-    //            break;
-    //        }
-    //    }
-    //}
-
-
-    //float* lines = &lineVector[0];
 
     unsigned int gridVBO, gridVAO, gridLineVAO, gridLineVBO, lineVBO, lineVAO;
     glGenVertexArrays(1, &gridVAO);
@@ -269,11 +127,12 @@ int main()
     //glBindVertexArray(0);
     // uncomment this call to draw in wireframe polygons.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
+    
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
     {
+        
         // input
         // -----
         processInput(window);
@@ -288,13 +147,13 @@ int main()
         glBindVertexArray(gridLineVAO);
         //glDrawArrays(GL_LINES, 0, (rows + cols) * 2);
         gridShader.use();
-        lineShader.setFloat("time", 0);
+        lineShader.setFloat("time", time);
         lineShader.setFloat("size", size);
         glBindVertexArray(gridVAO);
         
         //glDrawArrays(GL_POINTS, 0, rows * cols);
         lineShader.use();
-        lineShader.setFloat("time", time / 10);
+        lineShader.setFloat("time", time/10);
         lineShader.setFloat("size", size);
         glBindVertexArray(lineVAO);
         glPointSize(10);
@@ -325,6 +184,9 @@ void processInput(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        time = glfwGetTime();
+
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
