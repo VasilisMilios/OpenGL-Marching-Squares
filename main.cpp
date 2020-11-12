@@ -7,6 +7,7 @@
 
 #include <vector> 
 #include <iostream>
+#include <stdlib.h>   
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -16,8 +17,8 @@ std::vector<float> getOffset(int state);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 800;
 
-const int rows = 200;
-const int cols = 200;
+const int rows = 1000;
+const int cols = 1000;
 const float size = 2.0 / (rows - 1);
 
 float time = 0;
@@ -75,13 +76,14 @@ int main()
         gridLines[rows * 4 + i * 4 + 3] = i * size - 1.0f;
     }
 
-    float gridVertices[rows][cols][3];
+    float *gridVertices = (float*) malloc(rows*cols*3*sizeof(float));
+    int count = 0;
 
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-            gridVertices[i][j][0] = i * size - 1.0f;
-            gridVertices[i][j][1] = j * size - 1.0f;
-            gridVertices[i][j][2] = 0.0f;
+            gridVertices[count++] = i * size - 1.0f;
+            gridVertices[count++] = j * size - 1.0f;
+            gridVertices[count++] = 0.0f;
         }
     }
 
@@ -90,9 +92,9 @@ int main()
     glGenVertexArrays(1, &gridVAO);
     glGenBuffers(1, &gridVBO);
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-    glBindVertexArray(gridVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
-    glBufferData(GL_ARRAY_BUFFER,sizeof(gridVertices), gridVertices, GL_STATIC_DRAW);
+   // glBindVertexArray(gridVAO);
+    //glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
+   // glBufferData(GL_ARRAY_BUFFER,sizeof(gridVertices), gridVertices, GL_STATIC_DRAW);
     //glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(gridVertices), gridVertices);
     //glBufferSubData(GL_ARRAY_BUFFER, sizeof(gridVertices), sizeof(gridValues), gridValues);
 
@@ -115,7 +117,7 @@ int main()
     //bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     glBindVertexArray(lineVAO);
     glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(gridVertices), gridVertices, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, rows * cols * 3 * sizeof(float), gridVertices, GL_DYNAMIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -127,6 +129,7 @@ int main()
     //glBindVertexArray(0);
     // uncomment this call to draw in wireframe polygons.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    free(gridVertices);
     
     // render loop
     // -----------
